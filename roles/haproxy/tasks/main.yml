@@ -1,0 +1,24 @@
+---
+- name: Set hostname
+  hostname:
+    name: "{{ inventory_hostname }}"
+
+- name: Build /etc/hosts file
+  lineinfile:
+    dest: /etc/hosts
+    line: "{{ hostvars[item].ansible_host }} {{ item }}"
+  with_items: "{{ groups['all'] }}"
+
+- name: Install HA Proxy
+  package:
+    name: haproxy
+    state: present
+
+- name: Generate HA Proxy config
+  template: src=haproxy.cfg.j2 dest=/etc/haproxy/haproxy.cfg
+
+- name: Enable services
+  service:
+    name: haproxy
+    enabled: true
+    state: started

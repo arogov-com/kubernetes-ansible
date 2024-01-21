@@ -1,0 +1,12 @@
+---
+- hosts: haproxy
+  become: yes
+  roles:
+    - haproxy
+
+- hosts: cluster
+  become: yes
+  roles:
+    - install
+    - prepare
+    - init_cluster

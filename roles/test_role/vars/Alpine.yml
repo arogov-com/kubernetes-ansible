@@ -1,0 +1,4 @@
+---
+packages_restart:
+  - sysctl
+  - modules

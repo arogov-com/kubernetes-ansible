@@ -1,0 +1,4 @@
+---
+packages_restart:
+  - systemd-sysctl
+  - systemd-modules-load

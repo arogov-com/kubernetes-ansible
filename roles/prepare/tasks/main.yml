@@ -1,0 +1,63 @@
+---
+- name: Include vars for os family
+  include_vars:
+    file: "{{ ansible_os_family }}.yml"
+
+- name: Set hostname
+  hostname:
+    name: "{{ inventory_hostname }}"
+
+- name: Build /etc/hosts file
+  lineinfile:
+    dest: /etc/hosts
+    line: "{{ hostvars[item].ansible_host }} {{ item }}"
+  with_items: "{{ groups['all'] }}"
+
+- name: Copy sysctl config
+  copy:
+    src: k8s_sysctl.conf
+    dest: /etc/sysctl.d/50-kubelet.conf
+
+- name: Copy modules-load config
+  copy:
+    src: k8s_modules.conf
+    dest: /etc/modules-load.d/k8s.conf
+
+- name: Restart sysctl and modules-load
+  service:
+    name: "{{item}}"
+    state: restarted
+  with_items: "{{ packages_restart }}"
+
+- name: Create /etc/containerd folder
+  file:
+    path: /etc/containerd
+    state: directory
+  when: ansible_os_family == "Archlinux"
+
+- name: Make containerd config
+  shell:
+    cmd: "containerd config default > /etc/containerd/config.toml"
+    creates: /etc/containerd/config.toml
+  when: ansible_os_family == "Archlinux"
+
+- name: Enable SystemdCgroup
+  replace:
+    path: /etc/containerd/config.toml
+    regexp: '(^.*SystemdCgroup.?=.?)(false)(.*$)'
+    replace: '\1true\3'
+  when: ansible_os_family == "Archlinux"
+
+- name: Enable services
+  service:
+    name: '{{ item }}'
+    enabled: true
+    state: started
+  with_items:
+    - containerd
+    - kubelet
+
+- name: Pull images
+  command:
+    cmd: kubeadm config images pull
+  when: "'master' in group_names"

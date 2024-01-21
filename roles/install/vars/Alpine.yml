@@ -1,0 +1,10 @@
+---
+packages:
+  - kubectl
+  - kubeadm
+  - kubelet
+  - kubelet-openrc
+  - containerd
+  - containerd-openrc
+  - cni-plugins
+  - cni-plugin-flannel

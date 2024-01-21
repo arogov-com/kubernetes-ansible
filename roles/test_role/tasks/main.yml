@@ -1,0 +1,43 @@
+---
+# tasks file for test_role
+# - name: Include vars for os family
+#   include_vars:
+#     file: "{{ ansible_os_family }}.yml"
+
+# - name: First task
+#   debug:
+#     msg: "{{ group_names }}"
+
+# - name: Join masters
+#   shell:
+#     cmd: hostname
+#   register: hst
+#   when:
+#     - inventory_hostname != "master1"
+#     - "'master' in group_names"
+
+# - name: Debug
+#   debug:
+#     msg: "{{ hst.stdout }}"
+
+# - name: Echo
+#   shell:
+#     cmd: echo --e Printing message {{ hst.stdout }}
+
+
+- name: get cmd
+  shell:
+    cmd: echo ls
+  register: ls_cmd
+  when: inventory_hostname == "master1"
+
+- name: get path
+  shell:
+    cmd: echo "/tmp/"
+  register: path
+  when: inventory_hostname == "master1"
+
+- name: exec ls_cmd
+  shell:
+    cmd: "{{ ls_cmd.stdout }} -la {{ path.stdout }}"
+  when: inventory_hostname == "master1"

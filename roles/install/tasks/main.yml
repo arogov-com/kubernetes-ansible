@@ -1,0 +1,9 @@
+---
+- name: Include vars for os family
+  include_vars:
+    file: "{{ ansible_os_family }}.yml"
+
+- name: Install packages required by Kubernetes
+  package:
+    name: "{{ packages }}"
+    state: present

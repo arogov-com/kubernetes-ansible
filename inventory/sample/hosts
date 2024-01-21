@@ -1,0 +1,22 @@
+[all]
+master1 ansible_host=192.168.0.10
+master2 ansible_host=192.168.0.11
+master3 ansible_host=192.168.0.12
+node1   ansible_host=192.168.0.13
+node2   ansible_host=192.168.0.14
+node3   ansible_host=192.168.0.15
+haproxy ansible_host=192.168.0.16 ansible_user=user ansible_become_pass=user
+
+[master]
+master1
+master2
+master3
+
+[node]
+node1
+node2
+node3
+
+[cluster:children]
+master
+node
