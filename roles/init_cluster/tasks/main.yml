@@ -39,7 +39,7 @@
   shell:
     cmd: "{{ hostvars['master1'].join_token.stdout }} --control-plane --certificate-key {{ hostvars['master1'].cert_key.stdout }}"
     creates: /etc/kubernetes/admin.conf
-  when: inventory_hostname == "master2" and "'master' in group_names"
+  when: inventory_hostname != "master1" and "'master' in group_names"
 
 - name: Join nodes
   shell:
